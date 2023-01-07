@@ -4,7 +4,12 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"sakuffo/saku-translate/cli"
+	"strings"
+	"sync"
 )
+
+var wg sync.WaitGroup
 
 var sourceLang string
 var targetLang string
@@ -25,11 +30,20 @@ func main() {
 		os.Exit(1)
 	}
 
+	strChan := make(chan string)
+
+	wg.Add(1)
+
 	reqBody := &cli.RequestBody{
-		SourceLang: sourcesourceLang,
+		SourceLang: sourceLang,
 		TargetLang: targetLang,
-		SourceText: sourcesourceText,
+		SourceText: sourceText,
 	}
 
-	cli.RquestTranslate(reqBod)
+	go cli.RequestTranslate(reqBody, strChan, &wg)
+
+	processedStr := strings.ReplaceAll(<-strChan, "+", " ")
+	fmt.Println("%s\n", processedStr)
+
+	wg.Wait()
 }
