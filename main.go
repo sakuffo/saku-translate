@@ -16,7 +16,7 @@ var targetLang string
 var sourceText string
 
 func init() {
-	flag.StringVar(&sourceLang, "s", "en", "Source Langeuage")
+	flag.StringVar(&sourceLang, "s", "en", "Source Language")
 	flag.StringVar(&targetLang, "t", "fr", "Target Language")
 	flag.StringVar(&sourceText, "st", "", "Text to translate")
 }
@@ -43,7 +43,8 @@ func main() {
 	go cli.RequestTranslate(reqBody, strChan, &wg)
 
 	processedStr := strings.ReplaceAll(<-strChan, "+", " ")
-	fmt.Println("%s\n", processedStr)
 
+	fmt.Printf("%s\n", processedStr)
+	close(strChan)
 	wg.Wait()
 }
